@@ -4,7 +4,7 @@ import textwrap
 
 # Example data
 actual = [(6.2, 11.5), (2, 6.5), (11, 6.5), (3.5, 10.5)] # insert actual points here
-calculated = [(6.55, 11.88), (1.66, 6.62), (10.68, 6.53), (3.81, 10.91)]
+calculated = [(6.55, 11.88), (1.66, 6.62), (10.68, 6.53), (3.81, 10.91)] # insert calculated points here
 
 # Compute errors
 actual_np = np.array(actual)
