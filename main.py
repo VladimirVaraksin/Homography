@@ -1,30 +1,38 @@
-from get_coordinates_pixels import get_points
-from view_transformer import ViewTransformer
 import numpy as np
 import cv2
 from ultralytics import YOLO
+import os
+from get_coordinates_pixels import get_points
+from view_transformer import ViewTransformer
+from save_frame import save_frame
+from detect import detect
 
-PERSON_CLASS_ID = 0
-target_vertices = np.array(((0, 0), (0, 0), (0, 0), (0, 0)), dtype=np.float32)
-path = 'images/image1.png'
+person_class_id = 0
+pixel_vertices = None
+target_vertices = np.array([[0, 0],[10, 0],[10, 20],[0, 20]], dtype=np.float32)
+model = YOLO('models/yolo12n.pt')
+class_names = list(model.names.values())
 
 def main ():
-    pixel_vertices = get_points(path)
-    view_transformer = ViewTransformer(pixel_vertices=pixel_vertices, target_vertices=target_vertices)
+    global person_class_id, target_vertices, model, class_names, pixel_vertices
 
     camera = cv2.VideoCapture(0)
-    model = YOLO('models/yolo12n.pt')
+    if not os.path.exists('images/image.png'):
+        save_frame(camera)  # Save a frame to click points on
+    if pixel_vertices is None:
+        pixel_vertices = get_points('images/image.png')  # Get pixel coordinates from the saved frame
+    view_transformer = ViewTransformer(pixel_vertices=pixel_vertices, target_vertices=target_vertices)
 
     while True:
         ret, frame = camera.read()
         if not ret:
             break
 
-        # Detect players
-        results = model.predict(frame, classes=[PERSON_CLASS_ID], conf=0.4, verbose=False)
+        # Detect people
+        results = model.predict(frame, classes=[person_class_id], conf=0.4, verbose=False, stream=True)
 
-        # plot the results
-        frame = results[0].plot() if results else frame
+        # Process the detection results and annotate the frame
+        frame = detect(frame, results, view_transformer, class_names)
 
         # Display the frame with detections
         cv2.imshow("Showcase", frame)
