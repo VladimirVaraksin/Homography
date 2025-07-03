@@ -8,8 +8,13 @@ from save_frame import save_frame
 from detect import detect
 
 person_class_id = 0
-pixel_vertices = None
-target_vertices = np.array([[0, 0],[10, 0],[10, 20],[0, 20]], dtype=np.float32)
+pixel_vertices = np.array([
+    [356, 943],
+    [555, 933],
+    [799, 1209],
+    [339, 1251],
+], dtype=np.float32) # Pixel coordinates of the corners in the input image
+target_vertices = np.array([[0, 0],[0.8, 0],[0.8, 2.55],[0, 2.55]], dtype=np.float32) # Real-world coordinates in meters
 model = YOLO('models/yolo12n.pt')
 class_names = list(model.names.values())
 
@@ -17,6 +22,7 @@ def main ():
     global person_class_id, target_vertices, model, class_names, pixel_vertices
 
     camera = cv2.VideoCapture(0)
+
     if not os.path.exists('images/image.png'):
         save_frame(camera)  # Save a frame to click points on
     if pixel_vertices is None:
@@ -26,6 +32,7 @@ def main ():
     while True:
         ret, frame = camera.read()
         if not ret:
+            print("Failed to capture frame from camera.")
             break
 
         # Detect people
@@ -35,11 +42,13 @@ def main ():
         frame = detect(frame, results, view_transformer, class_names)
 
         # Display the frame with detections
-        cv2.imshow("Showcase", frame)
+        cv2.imshow("Live Camera Feed", frame)
 
         # Exit on 'q' key press
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+    camera.release()
+
 
 if __name__ == "__main__":
     main()

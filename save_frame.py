@@ -1,9 +1,10 @@
 import cv2
 
-def save_frame(camera):
+def save_frame(cam):
     while True:
-        ret, frame = camera.read()
+        ret, frame = cam.read()
         if not ret:
+            print("Failed to capture frame from camera.")
             break
         cv2.imshow("Press q to save frame and exit", frame)
 
@@ -11,4 +12,11 @@ def save_frame(camera):
             cv2.imwrite("images/image.png", frame)
             break
 
+    cv2.destroyAllWindows()
+
+
+if __name__ == "__main__":
+    camera = cv2.VideoCapture(0)
+    save_frame(camera)
+    camera.release()
     cv2.destroyAllWindows()
