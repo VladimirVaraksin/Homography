@@ -9,7 +9,7 @@ from detect import detect
 
 person_class_id = 0
 pixel_vertices = None # Pixel coordinates of the corners in the input image
-target_vertices = np.array([[0, 0],[0.8, 0],[0.8, 2.55],[0, 2.55]], dtype=np.float32) # Real-world coordinates in meters
+target_vertices = np.array([[0, 0],[1.8, 0],[1.8, 3.8],[0, 3.8]], dtype=np.float32) # Real-world coordinates in meters
 model = YOLO('models/yolo12n.pt')
 class_names = list(model.names.values())
 
